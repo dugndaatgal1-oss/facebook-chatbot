@@ -7,7 +7,7 @@ app.use(express.json());
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 // ✅ Webhook verification (Meta шаардана)
 app.get("/webhook", (req, res) => {
@@ -37,7 +37,7 @@ app.post("/webhook", async (req, res) => {
         console.log(`📨 Хэрэглэгч: ${userMessage}`);
 
         try {
-          const aiReply = await getClaudeReply(userMessage);
+          const aiReply = await getGroqReply(userMessage);
           await sendMessage(senderId, aiReply);
         } catch (err) {
           console.error("❌ Алдаа:", err.message);
@@ -51,14 +51,16 @@ app.post("/webhook", async (req, res) => {
   }
 });
 
-// 🤖 Claude AI-аас хариулт авах
-async function getClaudeReply(userMessage) {
+// 🤖 Groq AI-аас хариулт авах
+async function getGroqReply(userMessage) {
   const response = await axios.post(
-    "https://api.anthropic.com/v1/messages",
+    "https://api.groq.com/openai/v1/chat/completions",
     {
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1024,
-      system: `Та Дундговь аймгийн Нийгмийн даатгалын газрын албан ёсны чат туслагч юм.
+      model: "llama3-8b-8192",
+      messages: [
+        {
+          role: "system",
+          content: `Та Дундговь аймгийн Нийгмийн даатгалын газрын албан ёсны чат туслагч юм.
 
 Таны үүрэг:
 - Нийгмийн даатгалтай холбоотой асуултад монгол хэлээр товч, тодорхой, найрсаг хариулах
@@ -74,18 +76,23 @@ async function getClaudeReply(userMessage) {
 - Нэр: Дундговь аймгийн Нийгмийн даатгалын газар
 - Утас: 70592309
 - Байршил: Дундговь аймаг, Мандалговь сум`,
-      messages: [{ role: "user", content: userMessage }],
+        },
+        {
+          role: "user",
+          content: userMessage,
+        },
+      ],
+      max_tokens: 1024,
     },
     {
       headers: {
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
+        Authorization: `Bearer ${GROQ_API_KEY}`,
+        "Content-Type": "application/json",
       },
     }
   );
 
-  return response.data.content[0].text;
+  return response.data.choices[0].message.content;
 }
 
 // 📤 Facebook-руу мессеж илгээх
