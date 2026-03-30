@@ -1,0 +1,28 @@
+{
+  "name": "facebook-claude-chatbot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  }
+}
+```
+
+---
+
+## Алхам 3: .env файл үүсгэх
+
+Мөн адил **шинэ text файл** үүсгэж нэрийг:
+```
+.env
+```
+болгоод дараах текстийг хуулна:
+```
+PAGE_ACCESS_TOKEN=орхи
+VERIFY_TOKEN=mybot123
+ANTHROPIC_API_KEY=орхи
