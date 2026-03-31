@@ -51,7 +51,7 @@ async function getGroqReply(userMessage) {
   const response = await axios.post(
     "https://api.groq.com/openai/v1/chat/completions",
     {
-      model: "llama-3.3-70b-versatile",
+      model: "llama3-8b-8192",
       messages: [
         {
           role: "system",
@@ -119,6 +119,7 @@ async function getGroqReply(userMessage) {
 
 ЦАХИМ ҮЙЛЧИЛГЭЭ:
 - https://portal.ndaatgal.mn - тэтгэмж хүсэлт илгээх, сайн дурын гэрээ байгуулах
+- https://daatguulagch.ndaatgal.mn - даатгуулагчийн мэдээлэл шалгах
 - Шимтгэл төлөх данс: Хаан банк 5450099464, Төрийн банк 220000038204
 
 САЙН ДУРЫН ДААТГАЛЫН ШИМТГЭЛИЙН ХЭМЖЭЭ (2025):
