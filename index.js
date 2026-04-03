@@ -29,7 +29,10 @@ app.post("/webhook", async (req, res) => {
     for (const entry of body.entry) {
       const event = entry.messaging[0];
       const senderId = event.sender.id;
-      if (event.message && event.message.text) {
+      // Get Started товч дарахад
+      if (event.postback && event.postback.payload === "GET_STARTED") {
+        await sendMessage(senderId, "Сайн байна уу! 👋 Та Дундговь аймгийн Нийгмийн даатгалын газрын AI чатботтой холбогдлоо!\n\nНийгмийн даатгалын үйлчилгээтэй холбоотой мэдээлэл авахаар бол асуултаа бичнэ үү.\n\n✅ Тэтгэвэр\n✅ Тэтгэмж\n✅ Шимтгэл\n✅ Сайн дурын даатгал\n\n📞 Утас: 70592309");
+      } else if (event.message && event.message.text) {
         const userMessage = event.message.text;
         console.log(`Хэрэглэгч: ${userMessage}`);
         try {
@@ -51,7 +54,7 @@ async function getGroqReply(userMessage) {
   const response = await axios.post(
     "https://api.groq.com/openai/v1/chat/completions",
     {
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       messages: [
         {
           role: "system",
