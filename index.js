@@ -33,6 +33,9 @@ app.post("/webhook", async (req, res) => {
       if (event.postback && event.postback.payload === "GET_STARTED") {
         await sendMessage(senderId, "Сайн байна уу! 👋 Та Дундговь аймгийн Нийгмийн даатгалын газрын AI чатботтой холбогдлоо!\n\nНийгмийн даатгалын үйлчилгээтэй холбоотой мэдээлэл авахаар бол асуултаа бичнэ үү.\n\n✅ Тэтгэвэр\n✅ Тэтгэмж\n✅ Шимтгэл\n✅ Сайн дурын даатгал\n\n📞 Утас: 70592309");
       } else if (event.message && event.message.text) {
+        // Мэндчилгээ шалгах
+        const greetings = ["сайн уу", "сайн байна уу", "hello", "hi", "сайн", "мэнд"];
+        const isGreeting = greetings.some(g => userMessage.toLowerCase().includes(g));
         const userMessage = event.message.text;
         console.log(`Хэрэглэгч: ${userMessage}`);
         try {
