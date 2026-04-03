@@ -63,7 +63,7 @@ async function getGroqReply(userMessage) {
   const response = await axios.post(
     "https://api.groq.com/openai/v1/chat/completions",
     {
-      model: "llama-3.3-70b-versatile",
+      model: "mixtral-8x7b-32768",
       messages: [
         {
           role: "system",
