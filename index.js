@@ -16,15 +16,12 @@ app.get("/webhook", (req, res) => {
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
   if (mode === "subscribe" && token === VERIFY_TOKEN) {
+    console.log("Webhook verified!");
     res.status(200).send(challenge);
   } else {
     res.sendStatus(403);
   }
 });
-
-const WELCOME_MSG = "Сайн байна уу! 👋 Та Дундговь аймгийн Нийгмийн даатгалын газрын AI чатботтой холбогдлоо!\n\nНийгмийн даатгалын үйлчилгээтэй холбоотой мэдээлэл авахаар бол асуултаа бичнэ үү.\n\n✅ Тэтгэвэр\n✅ Тэтгэмж\n✅ Шимтгэл\n✅ Сайн дурын даатгал\n\n📞 Утас: 70592309";
-
-const GREETINGS = ["сайн уу", "сайн байна уу", "hello", "hi", "сайн", "мэнд", "байна уу"];
 
 app.post("/webhook", async (req, res) => {
   const body = req.body;
@@ -32,20 +29,11 @@ app.post("/webhook", async (req, res) => {
     for (const entry of body.entry) {
       const event = entry.messaging[0];
       const senderId = event.sender.id;
-
-      if (event.postback && event.postback.payload === "GET_STARTED") {
-        await sendMessage(senderId, WELCOME_MSG);
-      } else if (event.message && event.message.text) {
+      if (event.message && event.message.text) {
         const userMessage = event.message.text;
         console.log(`Хэрэглэгч: ${userMessage}`);
-        const isGreeting = GREETINGS.some(g => userMessage.toLowerCase().includes(g));
         try {
-          let aiReply;
-          if (isGreeting) {
-            aiReply = WELCOME_MSG;
-          } else {
-            aiReply = await getGroqReply(userMessage);
-          }
+          const aiReply = await getGroqReply(userMessage);
           await sendMessage(senderId, aiReply);
         } catch (err) {
           console.error("Алдаа:", err.message);
@@ -85,6 +73,7 @@ async function getGroqReply(userMessage) {
 - Малчин эрэгтэй: 55 нас, нийт 20 жил (15 жил малчнаар)
 - Малчин эмэгтэй: 50 нас, нийт 20 жил (12 жил 6 сар малчнаар)
 - Доод хэмжээ (2026): Бүрэн тэтгэвэр 769,000 төгрөг, хувь тэнцүүлэн 652,000 төгрөг
+- Тэтгэвэр бодох хувь: 20 жил шимтгэлд 45%, нэмэлт жил тутамд 1.5%
 
 ХӨДӨЛМӨРИЙН ЧАДВАР АЛДСАНЫ ТЭТГЭВЭР:
 - 20+ жил шимтгэл эсвэл сүүлийн 5 жилд 36+ сар шимтгэл төлсөн
@@ -127,6 +116,11 @@ async function getGroqReply(userMessage) {
 - Хувиараа хөдөлмөр эрхлэгч, малчин, гэрийн эх болон бусад
 - Шимтгэлийн доод цалин: 792,000 төгрөг (2025), дээд: 5,544,000 төгрөг
 - Гэрээ байгуулах: Нийгмийн даатгалын газарт очих эсвэл https://portal.ndaatgal.mn
+
+ЦАХИМ ҮЙЛЧИЛГЭЭ:
+- https://portal.ndaatgal.mn - тэтгэмж хүсэлт илгээх, сайн дурын гэрээ байгуулах
+- https://daatguulagch.ndaatgal.mn - даатгуулагчийн мэдээлэл шалгах
+- Шимтгэл төлөх данс: Хаан банк 5450099464, Төрийн банк 220000038204
 
 САЙН ДУРЫН ДААТГАЛЫН ШИМТГЭЛИЙН ХЭМЖЭЭ (2025):
 Гэрээний орлогын хэмжээ: Хамгийн бага 792,000 төгрөг, Хамгийн их 5,544,000 төгрөг
@@ -178,6 +172,7 @@ async function sendMessage(recipientId, text) {
       message: { text },
     }
   );
+  console.log(`Илгээсэн: ${text}`);
 }
 
 const PORT = process.env.PORT || 3000;
